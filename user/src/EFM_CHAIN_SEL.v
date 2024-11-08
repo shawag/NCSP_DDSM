@@ -1,5 +1,5 @@
 `include "Timescale.v"
-module EFM_CHAIN #(
+module EFM_CHAIN_SEL #(
     parameter P_DATA_WIDTH = 8
 )
 ( 
@@ -8,6 +8,7 @@ module EFM_CHAIN #(
 
     input [7:0] 			 i_level_data,
 	input [7:0] 			 i_seed,
+	input [3:0]              i_mash_bit,
     input                    i_quantize1,
     input                    i_quantize2,
     input                    i_quantize3,
@@ -20,10 +21,11 @@ module EFM_CHAIN #(
 wire [7:0] 					 o_efm_data1;
 wire [7:0] 					 o_efm_data2;
 
-EFM 
-u0_EFM(
+EFM_SEL 
+u0_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
+	.i_mash_bit		( i_mash_bit ),
 	.i_efm_data 	( i_level_data),
 	.i_seed     	( i_seed      ),
 	.i_quantize 	( i_quantize1  ),
@@ -31,10 +33,11 @@ u0_EFM(
 	.o_quantize 	( o_quantize1  )
 );
 
-EFM 
-u1_EFM(
+EFM_SEL
+u1_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
+	.i_mash_bit		( i_mash_bit ),
 	.i_efm_data 	( o_efm_data1),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize2  ),
@@ -42,10 +45,11 @@ u1_EFM(
 	.o_quantize 	( o_quantize2  )
 );
 
-EFM
-u2_EFM(
+EFM_SEL
+u2_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
+	.i_mash_bit		( i_mash_bit ),
 	.i_efm_data 	( o_efm_data2),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize3  ),
