@@ -1,3 +1,6 @@
 {
-    "digital-ide.function.lsp.linter.vlog.diagnostor": "vivado"
+    "digital-ide.function.lsp.linter.vlog.diagnostor": "vivado",
+    "files.watcherExclude": {
+        "**/target": true
+    }
 }
