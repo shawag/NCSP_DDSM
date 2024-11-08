@@ -1,15 +1,15 @@
 `include "Timescale.v"
 module NC_MASH #(
-    parameter P_DATA_WIDTH = 6
+    parameter P_DATA_WIDTH = 8
 )
 (
     input                    i_clk,
     input                    i_rst_n,
-
-    input [P_DATA_WIDTH-1:0] i_level1_data,
-    input [P_DATA_WIDTH-1:0] i_level2_data,
-    input [P_DATA_WIDTH-1:0] i_level3_data,
-    input [P_DATA_WIDTH-1:0] i_level4_data,
+	input [3:0] 			 i_mash_bit,
+	input [11:0] 			 i_seed,
+    input [7:0] 			 i_level1_data,
+    input [7:0] 			 i_level2_data,
+    input [7:0] 			 i_level3_data,
    
     output                   o_quantize1,
     output                   o_quantize2,
@@ -23,17 +23,14 @@ wire w_quantize31;
 wire w_quantize32;
 wire w_quantize33;
 
-wire w_quantize41;
-wire w_quantize42;
-wire w_quantize43;
 
-
-EFM_CHAIN #(
-	.P_DATA_WIDTH 	( P_DATA_WIDTH  ))
+EFM_CHAIN_SEL
 u0_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
 	.i_rst_n      	( i_rst_n       ),
+	.i_mash_bit   	( i_mash_bit    ),
 	.i_level_data 	( i_level1_data  ),
+	.i_seed			( i_seed[11:4]   ),
 	.i_quantize1  	( w_quantize21   ),
 	.i_quantize2  	( w_quantize22   ),
 	.i_quantize3  	( w_quantize23   ),
@@ -42,12 +39,12 @@ u0_EFM_CHAIN(
 	.o_quantize3  	( o_quantize3   )
 );
 
-EFM_CHAIN #(
-	.P_DATA_WIDTH 	( P_DATA_WIDTH  ))
+EFM_CHAIN 
 u1_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
 	.i_rst_n      	( i_rst_n       ),
 	.i_level_data 	( i_level2_data  ),
+	.i_seed       	({i_seed[3:0],{4{1'b0}}}),
 	.i_quantize1  	( w_quantize31   ),
 	.i_quantize2  	( w_quantize32   ),
 	.i_quantize3  	( w_quantize33   ),
@@ -56,32 +53,18 @@ u1_EFM_CHAIN(
 	.o_quantize3  	( w_quantize23   )
 );
 
-EFM_CHAIN #(
-	.P_DATA_WIDTH 	( P_DATA_WIDTH  ))
+EFM_CHAIN 
 u2_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
 	.i_rst_n      	( i_rst_n       ),
 	.i_level_data 	( i_level3_data  ),
-	.i_quantize1  	( w_quantize41   ),
-	.i_quantize2  	( w_quantize42   ),
-	.i_quantize3  	( w_quantize43   ),
+	.i_seed			({8{1'b0}}       )	,
+	.i_quantize1  	( 1'b0   ),
+	.i_quantize2  	( o_quantize1   ),
+	.i_quantize3  	( o_quantize2   ),
 	.o_quantize1  	( w_quantize31   ),
 	.o_quantize2  	( w_quantize32   ),
 	.o_quantize3  	( w_quantize33   )
-);
-
-EFM_CHAIN #(
-	.P_DATA_WIDTH 	( P_DATA_WIDTH  ))
-u3_EFM_CHAIN(
-	.i_clk        	( i_clk         ),
-	.i_rst_n      	( i_rst_n       ),
-	.i_level_data 	( i_level4_data  ),
-	.i_quantize1  	( 1'b0   ),
-	.i_quantize2  	( 1'b0   ),
-	.i_quantize3  	( 1'b0   ),
-	.o_quantize1  	( w_quantize41   ),
-	.o_quantize2  	( w_quantize42   ),
-	.o_quantize3  	( w_quantize43   )
 );
 
 endmodule
