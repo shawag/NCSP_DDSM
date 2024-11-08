@@ -1,5 +1,5 @@
 `include "Timescale.v"
-module NC_MASH #(
+module NCSP_MASH #(
     parameter P_DATA_WIDTH = 8
 )
 (
