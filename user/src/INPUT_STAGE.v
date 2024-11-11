@@ -14,13 +14,13 @@ module INPUT_STAGE
     
 );
 
-
+assign o_lsb = i_lsb;
 
 genvar i;
 generate
     for(i=0; i<8; i=i+1) begin:msb_delay
         DELAY_UNIT #(
-        	.P_DELAY_CYCLE 	( 3  ))
+        	.P_DELAY_CYCLE 	( 2  ))
         u0_DELAY_UNIT_msb(
         	.i_clk   	( i_clk    ),
         	.i_rst_n 	( i_rst_n  ),
@@ -34,7 +34,7 @@ endgenerate
 generate
     for(i=0; i<8; i=i+1) begin:isb_delay
         DELAY_UNIT #(
-        	.P_DELAY_CYCLE 	( 2  ))
+        	.P_DELAY_CYCLE 	( 1  ))
         u2_DELAY_UNIT_isb2(
         	.i_clk   	( i_clk    ),
         	.i_rst_n 	( i_rst_n  ),
@@ -44,17 +44,6 @@ generate
     end
 endgenerate
 
-generate
-    for(i=0; i<8; i=i+1) begin:lsb_delay
-        DELAY_UNIT #(
-        	.P_DELAY_CYCLE 	( 1  ))
-        u2_DELAY_UNIT_isb2(
-        	.i_clk   	( i_clk    ),
-        	.i_rst_n 	( i_rst_n  ),
-        	.i_in    	( i_lsb[i]     ),
-        	.o_delay 	( o_lsb[i]  )
-        );
-    end
-endgenerate
+
 
 endmodule

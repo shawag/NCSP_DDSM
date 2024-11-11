@@ -14,11 +14,20 @@ module PHASE_ADDER (
     output [7:0] o_isb,
     output [7:0] o_lsb    
 );
+wire        seq_in;
+wire        seq_valid;
+wire [11:0] phaseadd_sel;
+reg [11:0]  r_phaseadd;
+reg [7:0]   r_msb;
+reg [7:0]   r_isb;
+reg [7:0]   r_lsb;
+reg [1:0]   r_seq;
 
-reg [11:0] r_phaseadd;
-reg [7:0]  r_msb;
-reg [7:0]  r_isb;
-reg [7:0]  r_lsb;
+assign seq_in = i_phaseadjusten & i_rst;
+assign seq_valid = seq_in & r_seq[0] & (~r_seq[1]);
+assign phaseadd_sel = seq_valid ? r_phaseadd : {12{1'b0}};
+assign o_isb[3:0] = r_isb[3:0];
+assign o_lsb = r_lsb;
 
 always @(posedge i_clk or negedge i_rst_n) begin
     if(~i_rst_n) begin
@@ -34,5 +43,23 @@ always @(posedge i_clk or negedge i_rst_n) begin
         r_lsb <= i_lsb;
     end
 end
+
+always @(posedge i_clk or negedge i_phaseadjusten) begin
+    if(~i_phaseadjusten)
+        r_seq <= 2'b00;
+    else
+        r_seq <= {r_seq[0], seq_in};
+end
+
+ADDER_BASIC #(
+	.P_DATA_WIDTH 	( 12  ))
+u1_ADDER_BASIC(
+	.i_a    	( {r_msb,r_isb[7:4]}),
+	.i_b    	( phaseadd_sel   ),
+	.i_cin  	( 1'b0   ),
+	.o_sum  	( {o_msb,o_isb[7:4]}   ),
+	.o_cout 	(         )
+);
+
     
 endmodule //PHASE_ADDER
