@@ -1,5 +1,5 @@
 `include "Timescale.v"
-module INPUT_STAGE
+module INPUT_DELAY
 (
     input                    i_clk,
     input                    i_rst_n,
