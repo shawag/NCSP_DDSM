@@ -41,7 +41,8 @@ wire [3:0]			w_frac_sel;
 
 wire [11:0] 	w_seed;
 wire [1:0]  	w_sel_order;
-wire [3:0]  	w_mash_bit;
+wire [7:0]      w_sum_sel;
+wire [8:0]      w_cout_sel;
 wire        	w_mashreseten;
 wire        	w_phaseadjusten;
 wire        	w_sel_frac;
@@ -62,7 +63,8 @@ INPUT_SYNC u_INPUT_SYNC(
 	.i_sel_frac      	( i_sel_frac       ),
 	.o_seed          	( w_seed           ),
 	.o_sel_order     	( w_sel_order      ),
-	.o_mash_bit      	( w_mash_bit       ),
+	.o_sum_sel			( w_sum_sel       ),
+	.o_cout_sel     	( w_cout_sel       ),
 	.o_mashreseten   	( w_mashreseten    ),
 	.o_phaseadjusten 	( w_phaseadjusten  ),
 	.o_sel_frac      	( w_sel_frac       )
@@ -98,7 +100,8 @@ INPUT_DELAY  u_INPUT_DELAY_frac(
 NCSP_MASH u_NCSP_MASH(
 	.i_clk         	( i_clk          ),
 	.i_rst_n       	( w_rst_n        ),
-	.i_mash_bit		( w_mash_bit     ),
+	.i_sum_sel		( w_sum_sel  ),
+	.i_cout_sel	    ( w_cout_sel   ),	
 	.i_seed		    ( w_seed       ),
 	.i_level1_data 	( w_msb          ),
 	.i_level2_data 	( w_isb         ),

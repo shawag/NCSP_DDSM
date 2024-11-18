@@ -8,7 +8,8 @@ module EFM_CHAIN_SEL #(
 
     input [7:0] 			 i_level_data,
 	input [7:0] 			 i_seed,
-	input [3:0]              i_mash_bit,
+	input [7:0]              i_sum_sel    ,
+	input [8:0]              i_cout_sel,
     input                    i_quantize1,
     input                    i_quantize2,
     input                    i_quantize3,
@@ -25,7 +26,8 @@ EFM_SEL
 u0_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
-	.i_mash_bit		( i_mash_bit ),
+	.i_sum_sel		( i_sum_sel    ),
+	.i_cout_sel 	( i_cout_sel   ),
 	.i_efm_data 	( i_level_data),
 	.i_seed     	( i_seed      ),
 	.i_quantize 	( i_quantize1  ),
@@ -37,7 +39,8 @@ EFM_SEL
 u1_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
-	.i_mash_bit		( i_mash_bit ),
+	.i_sum_sel		( i_sum_sel    ),
+	.i_cout_sel 	( i_cout_sel   ),
 	.i_efm_data 	( o_efm_data1),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize2  ),
@@ -49,7 +52,8 @@ EFM_SEL
 u2_EFM_SEL(
 	.i_clk      	( i_clk       ),
 	.i_rst_n    	( i_rst_n     ),
-	.i_mash_bit		( i_mash_bit ),
+	.i_sum_sel		( i_sum_sel    ),
+	.i_cout_sel 	( i_cout_sel   ),
 	.i_efm_data 	( o_efm_data2),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize3  ),

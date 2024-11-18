@@ -5,62 +5,54 @@ module EFM_SEL #(
 (
     input                       i_clk       ,
     input                       i_rst_n     ,
-    input [3:0]                 i_mash_bit    ,
+    input [7:0]                 i_sum_sel    ,
+    input [8:0]                 i_cout_sel,
     input [7:0]                 i_efm_data       ,
     input [7:0]                 i_seed          ,
     input                       i_quantize     ,
     output [7:0]                o_efm_data      ,
     output                      o_quantize    
 );
-reg [7:0] r_efm_data;
+
 reg ro_quantize;
 reg r_quantize;
 wire [7:0] w_sum; 
 wire [7:0] w_cout_bit;
-assign o_quantize = ro_quantize;
-assign o_efm_data = r_efm_data;
 reg [7:0] r_sum;
+assign o_quantize = ro_quantize;
 
+
+assign o_efm_data = r_sum & i_sum_sel;
 always @(*) begin
-    case(i_mash_bit)
-        4'h0:begin
-            r_efm_data = {8{1'b0}};
+    case(1'b1)
+        i_cout_sel[0]:begin
             r_quantize = i_quantize;
         end
-        4'h1:begin
-            r_efm_data = {{7{1'b0}},r_sum[0]};
+        i_cout_sel[1]:begin
             r_quantize = w_cout_bit[0];
         end
-        4'h2:begin
-            r_efm_data = {{6{1'b0}},r_sum[1:0]};
+        i_cout_sel[2]:begin
             r_quantize = w_cout_bit[1];
         end
-        4'h3:begin
-            r_efm_data = {{5{1'b0}},r_sum[2:0]};
+        i_cout_sel[3]:begin
             r_quantize = w_cout_bit[2];
         end
-        4'h4:begin
-            r_efm_data = {{4{1'b0}},r_sum[3:0]};
+        i_cout_sel[4]:begin
             r_quantize = w_cout_bit[3];
         end
-        4'h5:begin
-            r_efm_data = {{3{1'b0}},r_sum[4:0]};
+        i_cout_sel[5]:begin
             r_quantize = w_cout_bit[4];
         end
-        4'h6:begin
-            r_efm_data = {{2{1'b0}},r_sum[5:0]};
+        i_cout_sel[6]:begin
             r_quantize = w_cout_bit[5];
         end
-        4'h7:begin
-            r_efm_data = {{1{1'b0}},r_sum[6:0]};
+        i_cout_sel[7]:begin
             r_quantize = w_cout_bit[6];
         end
-        4'h8:begin
-            r_efm_data = r_sum[7:0];
+        i_cout_sel[8]:begin
             r_quantize = w_cout_bit[7];
         end
         default:begin
-            r_efm_data = r_sum[7:0];
             r_quantize = w_cout_bit[7];
         end
     endcase
