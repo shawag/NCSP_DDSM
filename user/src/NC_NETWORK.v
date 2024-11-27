@@ -52,8 +52,7 @@ always @ (posedge i_clk or negedge i_rst_n) begin
         r_add1 <= w_add1;
 end
 
-// outports wire
-wire [3:0] 	o_sum;
+
 
 ADDER_4_NCNET u0_ADDER_4_NCNET(
 	.i_add1  	( {{3{1'b0}}, i_quantize3}),

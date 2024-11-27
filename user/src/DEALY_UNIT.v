@@ -16,9 +16,11 @@ assign o_delay = ro_delay[P_DELAY_CYCLE-1];
 
 always @(posedge i_clk or negedge i_rst_n) begin
     if(~i_rst_n)
-        ro_delay <= 1'b0;
-    else if(P_DELAY_CYCLE >= 2)
+        ro_delay <= {P_DELAY_CYCLE{1'b0}};
+    else if(P_DELAY_CYCLE >= 3)
         ro_delay <= {ro_delay[P_DELAY_CYCLE-2:0], i_in};
+    else if(P_DELAY_CYCLE == 2)
+        ro_delay <= {ro_delay, i_in};
     else
         ro_delay <= i_in;
 

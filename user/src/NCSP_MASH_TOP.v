@@ -18,6 +18,7 @@ module NCSP_MASH_TOP
     input [7:0] 	i_isb,
     input [7:0] 	i_lsb,
 
+	output [3:0] 	o_frac,
     output [7:0] 	o_mash_out
     
 );
@@ -51,6 +52,7 @@ assign w_sel_2order = (w_sel_order[0])? w_quantize2:1'b0;
 assign w_sel_3order = (w_sel_order[1])? w_quantize3:1'b0;
 assign w_frac_sel = (w_sel_frac)? w_frac:4'b0;
 assign w_rst_n = ~(w_mashreseten & i_rst);
+assign o_frac = w_frac;
 
 INPUT_SYNC u_INPUT_SYNC(
 	.i_clk           	( i_clk            ),
