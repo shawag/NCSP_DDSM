@@ -6,7 +6,7 @@
  */
  `include "../src/timescale.v"
  `define CLK_PERIOD 10
- //`define RES_CAL
+ `define RES_CAL
  //`define SYS_TEST 
  `define FUN_TEST
 // `define MODE_TEST
@@ -20,7 +20,7 @@ reg [11:0]   phaseAdd;
 reg [1:0]    sel_order;
 reg [3:0]    mash_bit;
 reg [11:0]  seed;
-reg MASH_EN, MASH_POL, RESET, clk, mashResetEn, phaseAdjustEn, sel_frac;
+reg MASH_EN, MASH_POL, RESET, clk, mashResetEn, phaseAdjustEn, sel_frac,ff_rst;
 //output signal
 wire [7:0]  mash_out;
 wire [3:0]  sd_int;
@@ -33,6 +33,7 @@ integer		t_end;
 NCSP_MASH_TOP u_NCSP_MASH_TOP(
 	.i_clk           	( clk            ),
 	.i_rst           	( RESET          ),
+	.i_ff_rst			( ff_rst         ),
 	.i_seed          	( seed           ),
 	.i_phaseadd      	( phaseAdd       ),
 	.i_sel_order     	( sel_order      ),
@@ -64,10 +65,13 @@ task reset_gen;
 begin
     #100 
     RESET = 0;
+	ff_rst = 0;
     #100
     RESET = 1;
+	ff_rst = 1;
     #100
-    RESET = 0; 
+    RESET = 0;
+	ff_rst = 0; 
 end
 endtask
 
@@ -254,7 +258,8 @@ begin:res_cal
 	integer cnt2;
 	integer cnt3;
 	reg signed [127:0] input_accum;
-	reg [127:0] cnt;
+	integer cnt;
+	res = 0;
 	input_accum = 0;
 	cnt = 0;
 	cntn3 = 0;	
@@ -293,7 +298,7 @@ begin:res_cal
 	t_end = $time;
 	$display("%t,INFO: res = %.24f", $time,res);
 	$display("%t,INFO: error = %f", $time,(res-frac_res_out)/frac_res_out);
-	$display("%t,INFO: time consume is %0d0ps, t_start = %0d0ps, t_end = %0d0ps,",$time,(t_end-t_start),t_start,t_end);
+	$display("%t,INFO: time consume is %0d0ns, t_start = %0d0ns, t_end = %0d0ns,",$time,(t_end-t_start),t_start,t_end);
 	$display("%t,INFO: cntn3=%0d, cntn2=%0d, cntn1=%0d, cnt0=%0d, cnt1=%0d, cnt2=%0d, cnt3=%0d",$time,
 					cntn3,cntn2,cntn1,cnt0,cnt1,cnt2,cnt3);
 	$display("%t,INFO: cntn3=%0f%%, cntn2=%0f%%, cntn1=%0f%%, cnt0=%0f%%, cnt1=%0f%%, cnt2=%0f%%, cnt3=%0f%%",$time,
@@ -786,14 +791,14 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'h000001,12'd0);
-	#(50*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'h000001,12'd511);
-	#(50*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'h000001,12'd0);
-	#(50*`CLK_PERIOD)	
-	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'h000001,12'd0,12'd511);
-	#(50*`CLK_PERIOD)
+	frac_1order_16bit(8'd10,24'h000001,12'd511);
+	//#(50*`CLK_PERIOD)
+	frac_1order_16bit(8'd10,24'h000001,12'd511);
+	//#(50*`CLK_PERIOD)
+	frac_1order_16bit(8'd10,24'h000001,12'd0);
+	//#(50*`CLK_PERIOD)	
+	frac_xorder_xbit_phase(4'd0,2'd1,8'd10,24'h000001,12'd0,12'd511);
+	//#(50*`CLK_PERIOD)
 	$stop;
 	`endif
 	`ifdef SYS_TEST
