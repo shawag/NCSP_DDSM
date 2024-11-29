@@ -2,6 +2,7 @@
 module PHASE_ADDER (
     input      i_clk,
     input      i_rst,
+    input      i_ff_rst,
     input      i_phaseadjusten,
 
     input [11:0] i_phaseadd,
@@ -15,7 +16,6 @@ module PHASE_ADDER (
 );
 wire        seq_in;
 wire        seq_valid;
-wire        rst;
 wire [11:0] phaseadd_sel;
 reg [11:0]  r_phaseadd;
 reg [7:0]   r_msb;
@@ -23,15 +23,14 @@ reg [7:0]   r_isb;
 reg [7:0]   r_lsb;
 reg [1:0]   r_seq;
 
-assign rst = i_phaseadjusten ? 1'b0 :i_rst;
 assign seq_in = i_phaseadjusten & i_rst;
 assign seq_valid = seq_in & r_seq[0] & (~r_seq[1]);
 assign phaseadd_sel = seq_valid ? r_phaseadd : {12{1'b0}};
 assign o_isb[3:0] = r_isb[3:0];
 assign o_lsb = r_lsb;
 
-always @(posedge i_clk or posedge i_rst) begin
-    if(i_rst) begin
+always @(posedge i_clk or posedge i_ff_rst) begin
+    if(i_ff_rst) begin
         r_phaseadd <= {12{1'b0}};
         r_msb <= {8{1'b0}};
         r_isb <= {8{1'b0}};

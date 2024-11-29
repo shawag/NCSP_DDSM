@@ -3,6 +3,7 @@ module NCSP_MASH_TOP
 (
     input      		i_clk,
     input     		i_rst,
+	input			i_ff_rst,
 
 	input [11:0] 	i_seed,
 	input [11:0]	i_phaseadd,
@@ -56,7 +57,7 @@ assign o_frac = w_frac;
 
 INPUT_SYNC u_INPUT_SYNC(
 	.i_clk           	( i_clk            ),
-	.i_rst           	( i_rst            ),
+	.i_ff_rst           	( i_ff_rst         ),
 	.i_seed          	( i_seed           ),
 	.i_sel_order     	( i_sel_order      ),
 	.i_mash_bit      	( i_mash_bit       ),
@@ -76,6 +77,7 @@ INPUT_SYNC u_INPUT_SYNC(
 PHASE_ADDER u_PHASE_ADDER(
 	.i_clk           	( i_clk            ),
 	.i_rst           	( i_rst            ),
+	.i_ff_rst       	( i_ff_rst       ),
 	.i_phaseadjusten 	( w_phaseadjusten  ),
 	.i_phaseadd      	( i_phaseadd       ),
 	.i_msb           	( i_msb            ),

@@ -2,7 +2,7 @@
 module INPUT_SYNC
 (
     input      		i_clk,
-    input     		i_rst,
+    input     		i_ff_rst,
 
     input [11:0] 	i_seed,
 	input [1:0]		i_sel_order,
@@ -38,8 +38,8 @@ assign o_sel_frac = r_sel_frac;
 assign o_sum_sel = r_sum_sel;
 assign o_cout_sel = r_cout_sel;
 
-always @(posedge i_clk or posedge i_rst) begin
-    if(i_rst) begin
+always @(posedge i_clk or posedge i_ff_rst) begin
+    if(i_ff_rst) begin
         r_sum_sel <= {8{1'b0}};
 		r_cout_sel <= {9{1'b0}};
     end
@@ -89,8 +89,8 @@ always @(posedge i_clk or posedge i_rst) begin
     end
 end
 
-always @(posedge i_clk or posedge i_rst) begin
-    if(i_rst) begin
+always @(posedge i_clk or posedge i_ff_rst) begin
+    if(i_ff_rst) begin
         r_seed <= {12{1'b0}};
 		r_sel_order <= {2{1'b0}};
         r_mash_bit <= {4{1'b0}};
