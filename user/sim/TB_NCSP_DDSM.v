@@ -6,7 +6,7 @@
  */
  `include "../src/timescale.v"
  `define CLK_PERIOD 10
- `define RES_CAL
+ //`define RES_CAL
  //`define SYS_TEST 
  `define FUN_TEST
 // `define MODE_TEST
@@ -58,6 +58,8 @@ initial begin:clk_gen
     clk = 0;
     forever #((`CLK_PERIOD/2)) clk = ~clk;
 end
+
+
 //**************************************************
 // reset generator
 //**************************************************
@@ -65,13 +67,10 @@ task reset_gen;
 begin
     #100 
     RESET = 0;
-	ff_rst = 0;
     #100
     RESET = 1;
-	ff_rst = 1;
     #100
     RESET = 0;
-	ff_rst = 0; 
 end
 endtask
 
@@ -756,7 +755,7 @@ begin:frac_xorder_xbit_phase
 	mashbit_decoder(bit_val);
 	number_set(N_val,Kin_val);
 	initseed_sync(seed_val);
-	#(20*`CLK_PERIOD)
+	#(1*`CLK_PERIOD)
 	phaseadjust_sync(phase_val);
 	`ifdef RES_CAL
 	res_cal();
@@ -767,7 +766,12 @@ endtask
 // testbench
 //**********
 initial begin
-	
+	 #100 
+	ff_rst = 0;
+    #100
+	ff_rst = 1;
+    #100
+	ff_rst = 0; 
 	//frac_3order_24bit(8'd255,24'h000001,12'd0);
 	
 	`ifdef MODE_TEST
@@ -791,14 +795,14 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_1order_16bit(8'd10,24'h000001,12'd511);
-	//#(50*`CLK_PERIOD)
-	frac_1order_16bit(8'd10,24'h000001,12'd511);
-	//#(50*`CLK_PERIOD)
-	frac_1order_16bit(8'd10,24'h000001,12'd0);
-	//#(50*`CLK_PERIOD)	
-	frac_xorder_xbit_phase(4'd0,2'd1,8'd10,24'h000001,12'd0,12'd511);
-	//#(50*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'hf0f000,12'd0);
+	#(50*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'hf0f000,12'hf0f);
+	#(50*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'hf0f000,12'd0);
+	#(50*`CLK_PERIOD)	
+	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'hf0f000,12'd0,12'hf0f);
+	#(50*`CLK_PERIOD)
 	$stop;
 	`endif
 	`ifdef SYS_TEST

@@ -20,9 +20,9 @@ wire [7:0] w_sum;
 wire [7:0] w_cout_bit;
 reg [7:0] r_sum;
 assign o_quantize = ro_quantize;
-
-
 assign o_efm_data = r_sum & i_sum_sel;
+
+
 always @(*) begin
     case(1'b1)
         i_cout_sel[0]:begin

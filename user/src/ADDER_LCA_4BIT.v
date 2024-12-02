@@ -9,12 +9,12 @@ module ADDER_LCA_4BIT (
     output [3:0]  o_cout_bit 
 );
 
-wire [4:0] g;
-wire [4:0] p;
+wire [3:0] g;
+wire [3:0] p;
 wire [4:0] c;
 
 assign c[0] = i_cin;
-assign p = i_a | i_b;
+assign p = i_a ^ i_b;
 assign g = i_a & i_b;
 
 assign  c[1] = g[0] | (p[0]&c[0]);

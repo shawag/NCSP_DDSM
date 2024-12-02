@@ -5,6 +5,7 @@ module NCSP_MASH #(
 (
     input                    i_clk,
     input                    i_rst_n,
+	input					i_rst_n_1d,
 	input [7:0]              i_sum_sel,
 	input [8:0]              i_cout_sel,
 	input [11:0] 			 i_seed,
@@ -28,7 +29,7 @@ wire w_quantize33;
 EFM_CHAIN_SEL
 u0_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
-	.i_rst_n      	( i_rst_n       ),
+	.i_rst_n      	( i_rst_n_1d       ),
 	.i_sum_sel		( i_sum_sel    ),
 	.i_cout_sel 	( i_cout_sel   ),
 	.i_level_data 	( i_level1_data  ),
