@@ -77,7 +77,7 @@ u_PIPELINE_ADDER(
 	.i_clk       	( i_clk           ),
 	.i_rst_n    	( i_rst_n         ),
 	.i_a        	( i_efm_data      ),
-	.i_b        	( r_sum      ),
+	.i_b        	( w_sum      ),
 	.i_cin      	( i_quantize      ),
 	.o_sum       	( w_sum      ),
 	.o_cout_bit  	( w_cout_bit      )

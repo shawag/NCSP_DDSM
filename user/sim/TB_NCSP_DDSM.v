@@ -49,6 +49,14 @@ NCSP_MASH_TOP u_NCSP_MASH_TOP(
     .o_frac             (        sd_int         )   
 );
 
+initial begin
+
+$dumpvars(0);
+
+$dumpfile("test.vcd");
+
+end
+
 
 //**************************************************
 // clock generator
@@ -766,12 +774,31 @@ endtask
 // testbench
 //**********
 initial begin
-	 #100 
 	ff_rst = 0;
-    #100
+	N = 0;
+	Kin = 0;
+	phaseAdd = 0;
+	sel_order = 0;
+	mash_bit = 0;
+	seed = 0;
+	MASH_EN = 1; 
+	MASH_POL = 0;
+	RESET = 0;
+	mashResetEn = 1;
+	phaseAdjustEn = 0;
+	sel_frac = 0;
+
+    #10
 	ff_rst = 1;
-    #100
-	ff_rst = 0; 
+	
+    #10
+	ff_rst = 0;
+	
+	#50
+	RESET = 1; 
+
+	#50
+	RESET = 0;
 	//frac_3order_24bit(8'd255,24'h000001,12'd0);
 	
 	`ifdef MODE_TEST
@@ -795,13 +822,13 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'hf0f000,12'd0);
+	frac_3order_24bit(8'd10,24'h000011,12'd0);
+	#(1000*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'h011000,12'h011);
 	#(50*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'hf0f000,12'hf0f);
-	#(50*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'hf0f000,12'd0);
+	frac_3order_24bit(8'd10,24'h011000,12'd0);
 	#(50*`CLK_PERIOD)	
-	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'hf0f000,12'd0,12'hf0f);
+	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'h011000,12'd0,12'h011);
 	#(50*`CLK_PERIOD)
 	$stop;
 	`endif

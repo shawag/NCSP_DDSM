@@ -54,7 +54,7 @@ ADDER_LCA_4BIT
 u1_ADDER_LCA_4BIT(
 	.i_a    	( r_a_high),
 	.i_b    	( r_b_high),
-	.i_cin  	( cout_low_bit[3]),
+	.i_cin  	( r_cout_bit_low[3]),
 	.o_sum  	( sum_high),
     .o_cout_bit ( cout_high_bit  )
 );
