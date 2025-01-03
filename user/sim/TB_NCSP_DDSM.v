@@ -763,7 +763,7 @@ begin:frac_xorder_xbit_phase
 	mashbit_decoder(bit_val);
 	number_set(N_val,Kin_val);
 	initseed_sync(seed_val);
-	#(1*`CLK_PERIOD)
+	//#(1*`CLK_PERIOD)
 	phaseadjust_sync(phase_val);
 	`ifdef RES_CAL
 	res_cal();
@@ -822,14 +822,14 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'h000011,12'd0);
-	#(1000*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'h011000,12'h011);
-	#(50*`CLK_PERIOD)
-	frac_3order_24bit(8'd10,24'h011000,12'd0);
-	#(50*`CLK_PERIOD)	
-	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'h011000,12'd0,12'h011);
-	#(50*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'h000111,12'd0);
+	#(200*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'h111000,12'h111);
+	#(200*`CLK_PERIOD)
+	frac_3order_24bit(8'd10,24'h111000,12'd0);
+	#(200*`CLK_PERIOD)	
+	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'h111000,12'd0,12'h111);
+	#(200*`CLK_PERIOD)
 	$stop;
 	`endif
 	`ifdef SYS_TEST

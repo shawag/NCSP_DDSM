@@ -5,6 +5,7 @@ module PIPELINE_ADDER #(
 (  
     input               i_clk   ,
     input               i_rst_n ,
+    input [7:0]         i_seed,
     input [7:0] i_a     ,
     input [7:0] i_b     ,
     input       i_cin   ,
@@ -26,9 +27,9 @@ reg [3:0]   r_b_high;
 always @(posedge i_clk or negedge i_rst_n) begin
     if (~i_rst_n) begin
         r_cout_bit_low <= {4{1'b0}};
-        r_sum_low <=  {4{1'b0}};
+        r_sum_low <=  i_seed[3:0];
         r_a_high   <= {4{1'b0}};
-        r_b_high   <= {4{1'b0}};
+        r_b_high   <= i_seed[7:4];
     end
     else begin
         r_cout_bit_low <= cout_low_bit;

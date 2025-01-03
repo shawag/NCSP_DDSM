@@ -22,7 +22,7 @@ wire [7:0] w_sum;
 assign o_efm_data = r_efm_data;
 always @(posedge i_clk or negedge i_rst_n) begin
     if(~i_rst_n)
-        r_efm_data  <= i_seed;
+        r_efm_data  <= {8{1'b0}};
     else
         r_efm_data  <= w_sum; 
 end
@@ -37,7 +37,8 @@ end
 PIPELINE_ADDER 
 u_PIPELINE_ADDER(
 	.i_clk       	( i_clk           ),
-	.i_rst_n    	( i_rst_n         ),
+	.i_rst_n    	( i_rst_n         ), 
+    .i_seed         ( i_seed          ), 
 	.i_a        	( i_efm_data      ),
 	.i_b        	( w_sum      ),
 	.i_cin      	( i_quantize      ),

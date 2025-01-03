@@ -63,7 +63,7 @@ u2_EFM_CHAIN(
 	.i_level_data 	( i_level3_data  ),
 	.i_seed			({8{1'b0}}       )	,
 	.i_quantize1  	( 1'b0   ),
-	.i_quantize2  	( o_quantize1   ),
+	.i_quantize2  	( o_quantize1 ),
 	.i_quantize3  	( o_quantize2   ),
 	.o_quantize1  	( w_quantize31   ),
 	.o_quantize2  	( w_quantize32   ),

@@ -60,7 +60,7 @@ end
 
 always @(posedge i_clk or negedge i_rst_n) begin
     if(~i_rst_n)
-        r_sum  <= i_seed;
+        r_sum  <= {8{1'b0}};
     else
         r_sum  <= w_sum; 
 end
@@ -76,6 +76,7 @@ PIPELINE_ADDER
 u_PIPELINE_ADDER(
 	.i_clk       	( i_clk           ),
 	.i_rst_n    	( i_rst_n         ),
+    .i_seed     	( i_seed          ),
 	.i_a        	( i_efm_data      ),
 	.i_b        	( w_sum      ),
 	.i_cin      	( i_quantize      ),
