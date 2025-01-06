@@ -4,7 +4,8 @@
  * @Last Modified by: shawag
  * @Last Modified time: 2024-11-25 17:00:26
  */
- `include "../src/timescale.v"
+ //`include "../src/timescale.v"
+ `timescale 1ns / 1ps
  `define CLK_PERIOD 10
  //`define RES_CAL
  //`define SYS_TEST 
@@ -867,8 +868,7 @@ initial begin
     /*
 	frac_3order_16bit(8'd10,24'h000001,12'd4);
 	$stop();
-	/*
-	/*
+	
 	mash_set(1'b1,1'b1,1'b1);
 	mashorder_decoder(2'd3);
 	mashbit_decoder(4'd8);

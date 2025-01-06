@@ -44,6 +44,55 @@ reg [4:0]   mashbitplus16;
 real 		frac_res_out;
 integer		t_start;
 integer		t_end;
+
+
+//delay signal for test module
+reg [7:0]  sum_1_l_t_4d = 0;
+reg [7:0]  sum_1_i_t_2d = 0;
+reg [23:0]  sum_1_r_6d = 0;
+
+reg [7:0]  sum_2_l_t_4d = 0;
+reg [7:0]  sum_2_i_t_2d = 0;
+reg [23:0]  sum_2_r_8d = 0;
+
+reg [7:0]  sum_3_l_t_4d = 0;
+reg [7:0]  sum_3_i_t_2d = 0;
+reg [23:0]  sum_3_r_10d = 0;
+//inner signal
+//sum stage 1 for test
+wire [7:0] sum_1_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u0_EFM_SEL.o_efm_data;
+wire [7:0] sum_1_i_t = u_test.u_NCSP_MASH.u1_EFM_CHAIN.u0_EFM.o_efm_data;
+wire [7:0] sum_1_l_t = u_test.u_NCSP_MASH.u2_EFM_CHAIN.u0_EFM.o_efm_data;
+wire [23:0] sum_1_t = {sum_1_m_t,sum_1_i_t_2d,sum_1_l_t_4d};
+
+wire [7:0] sum_2_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u1_EFM_SEL.o_efm_data;
+wire [7:0] sum_2_i_t = u_test.u_NCSP_MASH.u1_EFM_CHAIN.u1_EFM.o_efm_data;
+wire [7:0] sum_2_l_t = u_test.u_NCSP_MASH.u2_EFM_CHAIN.u1_EFM.o_efm_data;
+wire [23:0] sum_2_t = {sum_2_m_t,sum_2_i_t_2d,sum_2_l_t_4d};
+
+wire [7:0] sum_3_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u2_EFM_SEL.o_efm_data;
+wire [7:0] sum_3_i_t = u_test.u_NCSP_MASH.u1_EFM_CHAIN.u2_EFM.o_efm_data;
+wire [7:0] sum_3_l_t = u_test.u_NCSP_MASH.u2_EFM_CHAIN.u2_EFM.o_efm_data;
+wire [23:0] sum_3_t = {sum_3_m_t,sum_3_i_t_2d,sum_3_l_t_4d};
+
+//sum stage 1 for ref
+wire [23:0] sum_1_r = u_ref.K106.sum;
+wire [23:0] sum_2_r = u_ref.K86.sum;
+wire [23:0] sum_3_r = u_ref.K87.sum;
+//test signal delay for data compare
+always @(*) begin
+	 sum_1_l_t_4d <=  #(4*`CLK_PERIOD) sum_1_l_t;
+	 sum_1_i_t_2d <=  #(2*`CLK_PERIOD) sum_1_i_t;
+	 sum_1_r_6d <=  #(6*`CLK_PERIOD) sum_1_r;
+
+	 sum_2_l_t_4d <=  #(4*`CLK_PERIOD) sum_2_l_t;
+	 sum_2_i_t_2d <=  #(2*`CLK_PERIOD) sum_2_i_t;
+	 sum_2_r_8d <=  #(8*`CLK_PERIOD) sum_2_r;
+
+	 sum_3_l_t_4d <=  #(4*`CLK_PERIOD) sum_3_l_t;
+	 sum_3_i_t_2d <=  #(2*`CLK_PERIOD) sum_3_i_t;
+	 sum_3_r_10d <=  #(10*`CLK_PERIOD) sum_3_r;
+end
 //instantiation the test module
 NCSP_MASH_TOP u_test(
 	.i_clk           	( clk            ),
@@ -143,51 +192,61 @@ begin
 		4'd0: begin
 			sel_sum = 8'b00000000;
 			sel_carry = 9'b000000001;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=16",$time);
 		end
 		4'd1: begin
 			sel_sum = 8'b00000001;
 			sel_carry = 9'b000000010;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=17",$time);
 		end
 		4'd2: begin
 			sel_sum = 8'b00000011;
 			sel_carry = 9'b000000100;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=18",$time);
 		end
 		4'd3: begin
 			sel_sum = 8'b00000111;
 			sel_carry = 9'b000001000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=19",$time);
 			end
 		4'd4: begin
 			sel_sum = 8'b00001111;
 			sel_carry = 9'b000010000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=20",$time);
 		end
 		4'd5: begin
 			sel_sum = 8'b00011111;
 			sel_carry = 9'b000100000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=21",$time);
 		end
 		4'd6: begin
 			sel_sum = 8'b00111111;
 			sel_carry = 9'b001000000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=22",$time);
 		end
 		4'd7: begin
 			sel_sum = 8'b01111111;
 			sel_carry = 9'b010000000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=23",$time);
 		end
 		4'd8: begin
 			sel_sum = 8'b11111111;
 			sel_carry = 9'b100000000;
+			mash_bit = mashbit;
 			$display("%t,INFO: mashbit=24",$time);
 		end
 		default: begin
 			sel_sum = 8'b00000000;
 			sel_carry = 9'b000000001;
+			mash_bit = mashbit;
 			$display("%t,ERROR: mashbit is invalid! mashbit set to 16",$time);
 		end
 	endcase
@@ -912,12 +971,15 @@ initial begin
 	`ifdef FUN_TEST
 	frac_3order_24bit(8'd10,24'h000111,12'd0);
     file_out_t = $fopen("frac_out_t.txt","w");
+	file_out_r = $fopen("frac_out_r.txt","w");
     repeat(200) begin
         @(posedge clk);
         #1;
-        $fdisplay(file_out_t,"%d",$signed(sd_int)); 
+        $fdisplay(file_out_t,"%d",$signed(sd_int));
+		$fdisplay(file_out_r,"%d",$signed(sd_int_ref)); 
     end
 	$fclose(file_out_t);
+	$fclose(file_out_r);
 	#(200*`CLK_PERIOD)
 	frac_3order_24bit(8'd10,24'h111000,12'h111);
 	#(200*`CLK_PERIOD)
