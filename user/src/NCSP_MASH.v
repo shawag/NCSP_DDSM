@@ -1,4 +1,6 @@
 `include "Timescale.v"
+//this define is used to turn off sp-mash with the purpose of sim with the reference design
+`define TEST_WITH_REF 
 module NCSP_MASH #(
     parameter P_DATA_WIDTH = 8
 )
@@ -63,8 +65,15 @@ u2_EFM_CHAIN(
 	.i_level_data 	( i_level3_data  ),
 	.i_seed			({8{1'b0}}       )	,
 	.i_quantize1  	( 1'b0   ),
+	//in fun compare  mode, turn off the sp-mash 
+	`ifdef TEST_WITH_REF
+	.i_quantize2  	( 1'b0 ),
+	.i_quantize3  	( 1'b0   ),	
+	`else
 	.i_quantize2  	( o_quantize1 ),
-	.i_quantize3  	( o_quantize2   ),
+	.i_quantize3  	( o_quantize2   ),	
+	`endif
+	
 	.o_quantize1  	( w_quantize31   ),
 	.o_quantize2  	( w_quantize32   ),
 	.o_quantize3  	( w_quantize33   )
