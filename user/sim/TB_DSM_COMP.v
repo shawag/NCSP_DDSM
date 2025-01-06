@@ -58,6 +58,10 @@ reg [23:0]  sum_2_r_8d = 0;
 reg [7:0]  sum_3_l_t_4d = 0;
 reg [7:0]  sum_3_i_t_2d = 0;
 reg [23:0]  sum_3_r_10d = 0;
+
+reg         nc_net_in_1_r_5p5d = 0;
+reg         nc_net_in_2_r_7p5d = 0;
+reg         nc_net_in_3_r_9p5d = 0;
 //inner signal
 //sum stage 1 for test
 wire [7:0] sum_1_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u0_EFM_SEL.o_efm_data;
@@ -75,10 +79,18 @@ wire [7:0] sum_3_i_t = u_test.u_NCSP_MASH.u1_EFM_CHAIN.u2_EFM.o_efm_data;
 wire [7:0] sum_3_l_t = u_test.u_NCSP_MASH.u2_EFM_CHAIN.u2_EFM.o_efm_data;
 wire [23:0] sum_3_t = {sum_3_m_t,sum_3_i_t_2d,sum_3_l_t_4d};
 
+wire nc_net_in_1_t = u_test.u_NC_NETWORK.i_quantize1;
+wire nc_net_in_2_t = u_test.u_NC_NETWORK.i_quantize2;
+wire nc_net_in_3_t = u_test.u_NC_NETWORK.i_quantize3;
+
 //sum stage 1 for ref
 wire [23:0] sum_1_r = u_ref.K106.sum;
 wire [23:0] sum_2_r = u_ref.K86.sum;
 wire [23:0] sum_3_r = u_ref.K87.sum;
+
+wire nc_net_in_1_r = u_ref.K106.Cout;
+wire nc_net_in_2_r = u_ref.K86.Cout;
+wire nc_net_in_3_r = u_ref.K87.Cout;
 //test signal delay for data compare
 always @(*) begin
 	 sum_1_l_t_4d <=  #(4*`CLK_PERIOD) sum_1_l_t;
@@ -92,6 +104,10 @@ always @(*) begin
 	 sum_3_l_t_4d <=  #(4*`CLK_PERIOD) sum_3_l_t;
 	 sum_3_i_t_2d <=  #(2*`CLK_PERIOD) sum_3_i_t;
 	 sum_3_r_10d <=  #(10*`CLK_PERIOD) sum_3_r;
+
+	 nc_net_in_1_r_5p5d <=  #(5.5*`CLK_PERIOD) nc_net_in_1_r;
+	 nc_net_in_2_r_7p5d <=  #(7.5*`CLK_PERIOD) nc_net_in_2_r;
+	 nc_net_in_3_r_9p5d <=  #(9.5*`CLK_PERIOD) nc_net_in_3_r;
 end
 //instantiation the test module
 NCSP_MASH_TOP u_test(
@@ -969,7 +985,30 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'h000111,12'd0);
+	frac_3order_24bit(8'd10,24'h111111,12'd0);
+	file_out_t = $fopen("sum1_out_t.txt","w");
+	file_out_r = $fopen("sum1_out_r.txt","w");
+    repeat(2000) begin
+        @(posedge clk);
+        #1;
+		if(sum_1_t != sum_1_r_6d)
+			$display("%t,ERROR: sum_1_t=%0h, sum_1_r_6d=%0h",$time,sum_1_t,sum_1_r_6d);
+		if(sum_2_t != sum_2_r_8d)
+			$display("%t,ERROR: sum_2_t=%0h, sum_2_r_8d=%0h",$time,sum_2_t,sum_2_r_8d);
+		if(sum_3_t != sum_3_r_10d)
+			$display("%t,ERROR: sum_3_t=%0h, sum_3_r_10d=%0h",$time,sum_3_t,sum_3_r_10d);
+		if(nc_net_in_1_t != nc_net_in_1_r_5p5d)
+			$display("%t,ERROR: nc_net_in_1_t=%0d, nc_net_in_1_r_5p5d=%0d",$time,nc_net_in_1_t,nc_net_in_1_r_5p5d);
+		if(nc_net_in_2_t != nc_net_in_2_r_7p5d)
+			$display("%t,ERROR: nc_net_in_2_t=%0d, nc_net_in_2_r_7p5d=%0d",$time,nc_net_in_2_t,nc_net_in_2_r_7p5d);
+		if(nc_net_in_3_t != nc_net_in_3_r_9p5d)
+			$display("%t,ERROR: nc_net_in_3_t=%0d, nc_net_in_3_r_9p5d=%0d",$time,nc_net_in_3_t,nc_net_in_3_r_9p5d);
+        $fdisplay(file_out_t,"%h",sum_1_t);
+		$fdisplay(file_out_r,"%h",sum_1_r_6d); 
+    end
+	$fclose(file_out_t);
+	$fclose(file_out_r);
+	/*
     file_out_t = $fopen("frac_out_t.txt","w");
 	file_out_r = $fopen("frac_out_r.txt","w");
     repeat(200) begin
@@ -980,7 +1019,9 @@ initial begin
     end
 	$fclose(file_out_t);
 	$fclose(file_out_r);
-	#(200*`CLK_PERIOD)
+	*/
+	#(200*`CLK_PERIOD);
+	/*
 	frac_3order_24bit(8'd10,24'h111000,12'h111);
 	#(200*`CLK_PERIOD)
 	frac_3order_24bit(8'd10,24'h111000,12'd0);
@@ -988,6 +1029,8 @@ initial begin
 	frac_xorder_xbit_phase(4'd8,2'd3,8'd10,24'h111000,12'd0,12'h111);
 	#(200*`CLK_PERIOD)
 	$stop;
+	*/
+	$stop();
 	`endif
 	`ifdef SYS_TEST
 	
