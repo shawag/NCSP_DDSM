@@ -62,6 +62,8 @@ reg [23:0]  sum_3_r_10d = 0;
 reg         nc_net_in_1_r_5p5d = 0;
 reg         nc_net_in_2_r_7p5d = 0;
 reg         nc_net_in_3_r_9p5d = 0;
+
+reg [3:0]   nc_net_out_r_10d = 0;
 //inner signal
 //sum stage 1 for test
 wire [7:0] sum_1_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u0_EFM_SEL.o_efm_data;
@@ -83,6 +85,8 @@ wire nc_net_in_1_t = u_test.u_NC_NETWORK.i_quantize1;
 wire nc_net_in_2_t = u_test.u_NC_NETWORK.i_quantize2;
 wire nc_net_in_3_t = u_test.u_NC_NETWORK.i_quantize3;
 
+wire [3:0]	nc_net_out_t_noff = u_test.u_NC_NETWORK.o_network;
+wire [3:0]	nc_net_out_t = u_test.u_OUTPUT_STAGE_frac.o_frac;
 //sum stage 1 for ref
 wire [23:0] sum_1_r = u_ref.K106.sum;
 wire [23:0] sum_2_r = u_ref.K86.sum;
@@ -91,6 +95,9 @@ wire [23:0] sum_3_r = u_ref.K87.sum;
 wire nc_net_in_1_r = u_ref.K106.Cout;
 wire nc_net_in_2_r = u_ref.K86.Cout;
 wire nc_net_in_3_r = u_ref.K87.Cout;
+
+wire [3:0]	nc_net_out_r_noff = u_ref.K84.OUT;
+wire [3:0]	nc_net_out_r = {u_ref.I107.Q,u_ref.I108.Q,u_ref.I109.Q,u_ref.I110.Q};
 //test signal delay for data compare
 always @(*) begin
 	 sum_1_l_t_4d <=  #(4*`CLK_PERIOD) sum_1_l_t;
@@ -108,6 +115,8 @@ always @(*) begin
 	 nc_net_in_1_r_5p5d <=  #(5.5*`CLK_PERIOD) nc_net_in_1_r;
 	 nc_net_in_2_r_7p5d <=  #(7.5*`CLK_PERIOD) nc_net_in_2_r;
 	 nc_net_in_3_r_9p5d <=  #(9.5*`CLK_PERIOD) nc_net_in_3_r;
+
+	 nc_net_out_r_10d <=  #(10*`CLK_PERIOD) nc_net_out_r;
 end
 //instantiation the test module
 NCSP_MASH_TOP u_test(
@@ -1003,6 +1012,8 @@ initial begin
 			$display("%t,ERROR: nc_net_in_2_t=%0d, nc_net_in_2_r_7p5d=%0d",$time,nc_net_in_2_t,nc_net_in_2_r_7p5d);
 		if(nc_net_in_3_t != nc_net_in_3_r_9p5d)
 			$display("%t,ERROR: nc_net_in_3_t=%0d, nc_net_in_3_r_9p5d=%0d",$time,nc_net_in_3_t,nc_net_in_3_r_9p5d);
+		if(nc_net_out_t != nc_net_out_r_10d)
+			$display("%t,ERROR: nc_net_out_t=%0d, nc_net_out_r_10d=%0d",$time,$signed(nc_net_out_t),$signed(nc_net_out_r_10d));
         $fdisplay(file_out_t,"%h",sum_1_t);
 		$fdisplay(file_out_r,"%h",sum_1_r_6d); 
     end
