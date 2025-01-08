@@ -7,7 +7,8 @@ module NCSP_MASH #(
 (
     input                    i_clk,
     input                    i_rst_n,
-	input					i_rst_n_1d,
+	input					i_ff_rst,
+//	input					i_rst_n_1d,
 	input [7:0]              i_sum_sel,
 	input [8:0]              i_cout_sel,
 	input [11:0] 			 i_seed,
@@ -19,6 +20,9 @@ module NCSP_MASH #(
     output                   o_quantize2,
     output                   o_quantize3
 );
+
+reg [7:0] rst_delay_tree;
+
 wire w_quantize21;
 wire w_quantize22;
 wire w_quantize23;
@@ -27,11 +31,23 @@ wire w_quantize31;
 wire w_quantize32;
 wire w_quantize33;
 
+always @(posedge i_clk or posedge i_ff_rst) begin
+	if(i_ff_rst) begin
+		rst_delay_tree <= 8'hff;
+	end
+	else begin
+		rst_delay_tree <= {rst_delay_tree[6:0],i_rst_n};
+	end
+	
+end
+
 
 EFM_CHAIN_SEL
 u0_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
-	.i_rst_n      	( i_rst_n_1d       ),
+	.i_rst_n      	( rst_delay_tree[3]    ),
+ 	.i_rst_n_2d		( rst_delay_tree[5]    ),
+	.i_rst_n_4d		( rst_delay_tree[7]    ),
 	.i_sum_sel		( i_sum_sel    ),
 	.i_cout_sel 	( i_cout_sel   ),
 	.i_level_data 	( i_level1_data  ),
@@ -47,7 +63,9 @@ u0_EFM_CHAIN(
 EFM_CHAIN 
 u1_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
-	.i_rst_n      	( i_rst_n       ),
+	.i_rst_n      	( rst_delay_tree[1]    ),
+	.i_rst_n_2d		( rst_delay_tree[3]    ),
+	.i_rst_n_4d		( rst_delay_tree[5]    ),
 	.i_level_data 	( i_level2_data  ),
 	.i_seed       	({i_seed[3:0],{4{1'b0}}}),
 	.i_quantize1  	( w_quantize31   ),
@@ -62,6 +80,8 @@ EFM_CHAIN
 u2_EFM_CHAIN(
 	.i_clk        	( i_clk         ),
 	.i_rst_n      	( i_rst_n       ),
+	.i_rst_n_2d		( rst_delay_tree[1]    ),
+	.i_rst_n_4d		( rst_delay_tree[3]    ),
 	.i_level_data 	( i_level3_data  ),
 	.i_seed			({8{1'b0}}       )	,
 	.i_quantize1  	( 1'b0   ),

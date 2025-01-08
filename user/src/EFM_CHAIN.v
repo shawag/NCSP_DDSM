@@ -5,6 +5,8 @@ module EFM_CHAIN #(
 ( 
     input                    i_clk,
     input                    i_rst_n,
+	input 					 i_rst_n_2d,
+	input 					 i_rst_n_4d,
 
     input [7:0] 			 i_level_data,
 	input [7:0] 			 i_seed,
@@ -34,7 +36,7 @@ u0_EFM(
 EFM 
 u1_EFM(
 	.i_clk      	( i_clk       ),
-	.i_rst_n    	( i_rst_n     ),
+	.i_rst_n    	( i_rst_n_2d     ),
 	.i_efm_data 	( o_efm_data1),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize2  ),
@@ -45,7 +47,7 @@ u1_EFM(
 EFM
 u2_EFM(
 	.i_clk      	( i_clk       ),
-	.i_rst_n    	( i_rst_n     ),
+	.i_rst_n    	( i_rst_n_4d     ),
 	.i_efm_data 	( o_efm_data2),
 	.i_seed     	( {8{1'b0}}      ),
 	.i_quantize 	( i_quantize3  ),

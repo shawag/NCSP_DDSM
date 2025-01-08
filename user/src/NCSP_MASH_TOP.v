@@ -41,7 +41,7 @@ wire				w_sel_3order;
 wire [3:0]          w_network;
 wire [3:0]			w_frac_sel;
 
-reg  rst_n_1d;
+reg  [1:0] rst_n_1d;
 
 
 wire [11:0] 	w_seed;
@@ -57,14 +57,27 @@ assign w_sel_3order = (w_sel_order[1])? w_quantize3:1'b0;
 assign w_frac_sel = (w_sel_frac)? w_frac:4'b0;
 assign w_rst_n = ~(w_mashreseten & i_rst);
 assign o_frac = w_frac;
-
+/*
+always @(*) begin
+	rst_n_1d = w_rst_n;
+end
+*/
+/*
 always @(posedge i_clk or posedge i_ff_rst) begin
 	if(i_ff_rst)
 		rst_n_1d <= 1'b1;
 	else
 		rst_n_1d <= w_rst_n;
 end
-
+*/
+/*
+always @(posedge i_clk or posedge i_ff_rst) begin
+	if(i_ff_rst)
+		rst_n_1d <= 2'b11;
+	else
+		rst_n_1d <= {rst_n_1d[0],w_rst_n};
+end
+*/
 INPUT_SYNC u_INPUT_SYNC(
 	.i_clk           	( i_clk            ),
 	.i_ff_rst           	( i_ff_rst         ),
@@ -113,8 +126,8 @@ INPUT_DELAY  u_INPUT_DELAY_frac(
 
 NCSP_MASH u_NCSP_MASH(
 	.i_clk         	( i_clk          ),
-	.i_rst_n_1d     ( rst_n_1d         ),
 	.i_rst_n       	( w_rst_n        ),
+	.i_ff_rst	  	( i_ff_rst       ),
 	.i_sum_sel		( w_sum_sel  ),
 	.i_cout_sel	    ( w_cout_sel   ),	
 	.i_seed		    ( w_seed       ),

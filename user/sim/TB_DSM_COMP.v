@@ -64,6 +64,8 @@ reg         nc_net_in_2_r_7p5d = 0;
 reg         nc_net_in_3_r_9p5d = 0;
 
 reg [3:0]   nc_net_out_r_10d = 0;
+
+reg [7:0]   mash_out_ref_10d = 0;
 //inner signal
 //sum stage 1 for test
 wire [7:0] sum_1_m_t = u_test.u_NCSP_MASH.u0_EFM_CHAIN.u0_EFM_SEL.o_efm_data;
@@ -117,6 +119,8 @@ always @(*) begin
 	 nc_net_in_3_r_9p5d <=  #(9.5*`CLK_PERIOD) nc_net_in_3_r;
 
 	 nc_net_out_r_10d <=  #(10*`CLK_PERIOD) nc_net_out_r;
+
+	 mash_out_ref_10d <= #(10*`CLK_PERIOD) mash_out_ref;
 end
 //instantiation the test module
 NCSP_MASH_TOP u_test(
@@ -994,7 +998,7 @@ initial begin
 	#(50*`CLK_PERIOD)
 	`endif
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'h111111,12'd0);
+	frac_3order_24bit(8'd10,24'h111111,12'h111);
 	file_out_t = $fopen("sum1_out_t.txt","w");
 	file_out_r = $fopen("sum1_out_r.txt","w");
     repeat(2000) begin
@@ -1014,6 +1018,9 @@ initial begin
 			$display("%t,ERROR: nc_net_in_3_t=%0d, nc_net_in_3_r_9p5d=%0d",$time,nc_net_in_3_t,nc_net_in_3_r_9p5d);
 		if(nc_net_out_t != nc_net_out_r_10d)
 			$display("%t,ERROR: nc_net_out_t=%0d, nc_net_out_r_10d=%0d",$time,$signed(nc_net_out_t),$signed(nc_net_out_r_10d));
+		//前十个error很正常，流水线改造会有启动时间，该时间和组合逻辑型在该设计中差10个周期
+		if(mash_out != mash_out_ref_10d)
+			$display("%t,ERROR: mash_out=%0d, mash_out_ref_10d=%0d",$time,mash_out,mash_out_ref_10d);
         $fdisplay(file_out_t,"%h",sum_1_t);
 		$fdisplay(file_out_r,"%h",sum_1_r_6d); 
     end
