@@ -40,11 +40,16 @@ reg [8:0]   sel_carry;
 integer file_out_t;
 //output file for ref module
 integer file_out_r;
+
+integer rand_seed;
 reg [4:0]   mashbitplus16;
 real 		frac_res_out;
 integer		t_start;
 integer		t_end;
 
+reg [23:0] i;
+
+reg [23:0] rand_in=0;
 
 //delay signal for test module
 reg [7:0]  sum_1_l_t_4d = 0;
@@ -163,7 +168,7 @@ wea_pll_mashFast_topSeed24_fxV1 u_ref(
 	.seed          	( seed           )
 );
 
-
+/*
 initial begin
 $dumpfile("test.vcd");
 $dumpvars(0);
@@ -171,6 +176,7 @@ $dumpvars(0);
 
 
 end
+*/
 
 
 //**************************************************
@@ -946,6 +952,20 @@ begin:frac_xorder_xbit_phase
 	`endif
 end
 endtask
+
+task check_output;
+input integer sum;
+begin
+	repeat(sum) begin
+    @(posedge clk);
+    #1;
+	if(nc_net_out_t != nc_net_out_r_10d) begin
+		$display("%t,ERROR: nc_net_out_t=%0d, nc_net_out_r_10d=%0d",$time,$signed(nc_net_out_t),$signed(nc_net_out_r_10d));
+		$stop();
+	end
+	end
+end
+endtask
 //**************************************************
 // testbench
 //**********
@@ -963,6 +983,9 @@ initial begin
 	mashResetEn = 1;
 	phaseAdjustEn = 0;
 	sel_frac = 0;
+	rand_seed = 100;
+	$display("Setting random seed: %0d", rand_seed);
+    //$random(rand_seed);
 
     #10
 	ff_rst = 1;
@@ -997,35 +1020,76 @@ initial begin
 	initseed_sync(12'd0);
 	#(50*`CLK_PERIOD)
 	`endif
+
 	`ifdef FUN_TEST
-	frac_3order_24bit(8'd10,24'h111111,12'h111);
-	file_out_t = $fopen("sum1_out_t.txt","w");
-	file_out_r = $fopen("sum1_out_r.txt","w");
-    repeat(2000) begin
+	$display("%t,INFO: Testing boundary conditions...", $time);
+	for(i=0;i<24'd100;i=i+1) begin
+		frac_3order_24bit(8'd10,i,12'h111);
+		check_output(50000);
+	end
+	for(i=24'hffffff-100;i<24'hffffff;i=i+1) begin
+		frac_3order_24bit(8'd10,i,12'h111);
+		check_output(50000);
+	end
+	frac_3order_24bit(8'd10,24'hffffff,12'h111);
+	check_output(50000);
+	$display("%t,INFO: Testing random values...", $time);
+	
+	for(i=1;i<=5000;i=i+1) begin
+		rand_in = $random() % 24'hffffff;
+		if(rand_in < 10) rand_in = rand_in + 10;
+		if(rand_in > 24'hffffff-10) rand_in = rand_in - 10;
+		frac_3order_24bit(8'd10,rand_in,12'h111);
+		check_output(10000);
+	end
+	
+		/*sum_1_r_6d*/
+	//file_out_t = $fopen("sum1_out_t.txt","w");
+	//file_out_r = $fopen("sum1_out_r.txt","w");
+	/*
+    repeat(100) begin
         @(posedge clk);
         #1;
-		if(sum_1_t != sum_1_r_6d)
+		if(sum_1_t != sum_1_r_6d) begin
 			$display("%t,ERROR: sum_1_t=%0h, sum_1_r_6d=%0h",$time,sum_1_t,sum_1_r_6d);
-		if(sum_2_t != sum_2_r_8d)
+			$stop();
+		end
+		if(sum_2_t != sum_2_r_8d) begin
 			$display("%t,ERROR: sum_2_t=%0h, sum_2_r_8d=%0h",$time,sum_2_t,sum_2_r_8d);
-		if(sum_3_t != sum_3_r_10d)
+			$stop();
+		end
+		if(sum_3_t != sum_3_r_10d) begin
 			$display("%t,ERROR: sum_3_t=%0h, sum_3_r_10d=%0h",$time,sum_3_t,sum_3_r_10d);
-		if(nc_net_in_1_t != nc_net_in_1_r_5p5d)
+			$stop();
+		end
+		if(nc_net_in_1_t != nc_net_in_1_r_5p5d) begin
 			$display("%t,ERROR: nc_net_in_1_t=%0d, nc_net_in_1_r_5p5d=%0d",$time,nc_net_in_1_t,nc_net_in_1_r_5p5d);
-		if(nc_net_in_2_t != nc_net_in_2_r_7p5d)
+			$stop();
+		end
+		if(nc_net_in_2_t != nc_net_in_2_r_7p5d) begin
 			$display("%t,ERROR: nc_net_in_2_t=%0d, nc_net_in_2_r_7p5d=%0d",$time,nc_net_in_2_t,nc_net_in_2_r_7p5d);
-		if(nc_net_in_3_t != nc_net_in_3_r_9p5d)
+			$stop();
+		end
+		if(nc_net_in_3_t != nc_net_in_3_r_9p5d) begin
 			$display("%t,ERROR: nc_net_in_3_t=%0d, nc_net_in_3_r_9p5d=%0d",$time,nc_net_in_3_t,nc_net_in_3_r_9p5d);
-		if(nc_net_out_t != nc_net_out_r_10d)
+			$stop();
+		end
+		if(nc_net_out_t != nc_net_out_r_10d) begin
 			$display("%t,ERROR: nc_net_out_t=%0d, nc_net_out_r_10d=%0d",$time,$signed(nc_net_out_t),$signed(nc_net_out_r_10d));
+			$stop();
+		end
+		*/
 		//前十个error很正常，流水线改造会有启动时间，该时间和组合逻辑型在该设计中差10个周期
+		/*
 		if(mash_out != mash_out_ref_10d)
 			$display("%t,ERROR: mash_out=%0d, mash_out_ref_10d=%0d",$time,mash_out,mash_out_ref_10d);
-        $fdisplay(file_out_t,"%h",sum_1_t);
-		$fdisplay(file_out_r,"%h",sum_1_r_6d); 
-    end
-	$fclose(file_out_t);
-	$fclose(file_out_r);
+		*/
+        //$fdisplay(file_out_t,"%h",sum_1_t);
+		//$fdisplay(file_out_r,"%h",sum_1_r_6d); 
+    
+
+	//$fclose(file_out_t);
+	//$fclose(file_out_r);
 	/*
     file_out_t = $fopen("frac_out_t.txt","w");
 	file_out_r = $fopen("frac_out_r.txt","w");
@@ -1038,7 +1102,7 @@ initial begin
 	$fclose(file_out_t);
 	$fclose(file_out_r);
 	*/
-	#(200*`CLK_PERIOD);
+	//#(200*`CLK_PERIOD);
 	/*
 	frac_3order_24bit(8'd10,24'h111000,12'h111);
 	#(200*`CLK_PERIOD)
